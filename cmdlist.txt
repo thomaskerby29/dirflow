@@ -9,5 +9,7 @@
         • --skip-confirm
         • --exclude <pattern>
             • Coming soon
+• exit
+    • Exits the program
 • help
     • Outputs this list
