@@ -1,0 +1,13 @@
+• clean <path> <action> [modifiers]
+    • Removes unnecessary files and folders within a directory
+    • Actions (choose one):
+        • --duplicates
+        • --older-than <x days>
+        • --empty-folders
+    • Modifiers:
+        • --dry-run
+        • --skip-confirm
+        • --exclude <pattern>
+            • Coming soon
+• help
+    • Outputs this list
