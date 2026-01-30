@@ -5,6 +5,7 @@
         • --older-than <x days>
         • --empty-folders
     • Modifiers:
+        • --all-subfolders
         • --dry-run
         • --skip-confirm
         • --exclude <pattern>
