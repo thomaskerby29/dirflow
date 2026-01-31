@@ -1,0 +1,11 @@
+clean <path> <action> [modifiers]
+• Actions:
+        • --duplicates
+        • --older-than <days_since_modification>
+        • --empty-folders
+    • Modifiers:
+        • --all-subfolders
+        • --dry-run
+        • --skip-confirm
+        • --exclude <pattern>
+            • Coming soon

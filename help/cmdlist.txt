@@ -1,0 +1,8 @@
+• admin
+    • Elevated Windows permissions
+• clean
+    • Remove unwanted files and folders
+• exit
+    • Exits Dirflow
+• help <command>
+    • For command usage information

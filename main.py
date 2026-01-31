@@ -13,17 +13,24 @@ print(r""" _____    _____   _____    ______   _         ____   __          __
 print("Welcome to Dirflow!")
 
 
-def helpCommand():
-    with open('cmdlist.txt', encoding='utf-8') as f:
-        for line in f:
-            print(line.rstrip('\n'))
+def help_command(cmd):
+    parts = cmd.split(' ')
+    try:
+        if len(parts) == 2:
+            with open('help/' + str(parts[1] + '.txt'), encoding='utf-8') as f:
+                for line in f:
+                    print(line.rstrip('\n'))
+        elif len(parts) == 1:
+            with open('help/cmdlist.txt', encoding='utf-8') as f:
+                for line in f:
+                    print(line.rstrip('\n'))
+        else:
+            invalid_command(cmd)
+    except FileNotFoundError:
+        print("Command does not exist")
 
 
-def cleanCommand(cmd):
-    clean_cmd(cmd)
-
-
-def adminCommand():
+def admin_command():
     if not pyuac.isUserAdmin():
         print("Open as a new process")
         pyuac.runAsAdmin()
@@ -31,10 +38,10 @@ def adminCommand():
 
 
 symbol = "#" if pyuac.isUserAdmin() else ">"
-commands = {'help': helpCommand,
-                'clean': lambda: cleanCommand(command),
+commands = {'help': lambda: help_command(command),
+                'clean': lambda: clean_cmd(command),
                 'exit': lambda: sys.exit(),
-                'admin': lambda: adminCommand()
+                'admin': lambda: admin_command()
                 }
 
 while True:
