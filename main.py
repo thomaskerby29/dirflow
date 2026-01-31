@@ -1,6 +1,8 @@
 from fileops.cleancmd import clean_cmd
+from fileops.errorhandle import *
 import pyuac
 import sys
+import traceback
 
 print(r""" _____    _____   _____    ______   _         ____   __          __
 |  __ \  |_   _| |  __ \  |  ____| | |       / __ \  \ \        / /
@@ -16,6 +18,7 @@ def helpCommand():
         for line in f:
             print(line.rstrip('\n'))
 
+
 def cleanCommand(cmd):
     clean_cmd(cmd)
 
@@ -28,14 +31,19 @@ def adminCommand():
 
 
 symbol = "#" if pyuac.isUserAdmin() else ">"
+commands = {'help': helpCommand,
+                'clean': lambda: cleanCommand(command),
+                'exit': lambda: sys.exit(),
+                'admin': lambda: adminCommand()
+                }
 
 while True:
-    try:
-        command = input(str(f"\ndirflow{symbol} "))
+    command = input(str(f"\ndirflow{symbol} "))
 
-        {'help': helpCommand,
-         'clean': lambda: cleanCommand(command),
-         'exit': lambda: sys.exit(),
-         'admin': lambda: adminCommand()}[command.split(' ', 1)[0]]()
+    try:
+        if command.split(' ', 1)[0] not in commands:
+            invalid_command(command.split(' ', 1)[0])
+        else:
+            commands[command.split(' ', 1)[0]]()
     except Exception:
-        print("Invalid command - type 'help' for help")
+        unknown_error(traceback.format_exc())
