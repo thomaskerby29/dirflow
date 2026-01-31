@@ -1,4 +1,6 @@
 from fileops.cleancmd import clean_cmd
+import pyuac
+import sys
 
 print(r""" _____    _____   _____    ______   _         ____   __          __
 |  __ \  |_   _| |  __ \  |  ____| | |       / __ \  \ \        / /
@@ -18,9 +20,22 @@ def cleanCommand(cmd):
     clean_cmd(cmd)
 
 
-while True:
-    command = input(str("\nPlease enter a command: "))
+def adminCommand():
+    if not pyuac.isUserAdmin():
+        print("Open as a new process")
+        pyuac.runAsAdmin()
+        sys.exit()
 
-    {'help': helpCommand,
-     'clean': lambda: cleanCommand(command),
-     'exit': lambda: exit()}[command.split(' ', 1)[0]]()
+
+symbol = "#" if pyuac.isUserAdmin() else ">"
+
+while True:
+    try:
+        command = input(str(f"\ndirflow{symbol} "))
+
+        {'help': helpCommand,
+         'clean': lambda: cleanCommand(command),
+         'exit': lambda: sys.exit(),
+         'admin': lambda: adminCommand()}[command.split(' ', 1)[0]]()
+    except Exception:
+        print("Invalid command - type 'help' for help")

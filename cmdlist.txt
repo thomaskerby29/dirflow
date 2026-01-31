@@ -1,3 +1,5 @@
+• admin
+    • Gives Dirflow elevated privileges
 • clean <path> <action> [modifiers]
     • Removes unnecessary files and folders within a directory
     • Actions (choose one):
