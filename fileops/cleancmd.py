@@ -1,9 +1,44 @@
 import os
 from pathlib import Path
 import time
+import hashlib
 
 def duplicate_cmd(parts):
-    print("Coming Soon")
+    BUF_SIZE = 65536
+    allFiles = {}
+
+    def check_all(folder):
+        for f in folder.iterdir():
+            if f.is_file():
+                md5 = hashlib.md5()
+                with open(str(f), 'rb') as file:
+                    while chunk := file.read(BUF_SIZE):
+                        md5.update(chunk)
+                    allFiles.setdefault(md5.hexdigest(), []).append(f)
+            elif f.is_dir():
+                if '--all-subfolders' in parts:
+                    check_all(f)
+    check_all(Path(parts[1]))
+
+    removeArray = []
+    print("Duplicate files:")
+    for file_hash, file_list in allFiles.items():
+        if len(file_list) > 1:
+            for f in file_list:
+                print(str(f))
+                removeArray.append(str(f))
+            if '--dry-run' in parts:
+                print(file_hash)
+            else:
+                if '--skip-confirm' in parts:
+                    print("Ignoring --skip-confirm")
+                removeChoice = input("Select duplicate to keep (0-" + str(len(removeArray)-1) +"): ")
+                del removeArray[int(removeChoice)]
+                for x in removeArray:
+                    os.remove(x)
+                removeArray.clear()
+                print("Duplicate(s) removed")
+
 
 
 def older_cmd(parts):
