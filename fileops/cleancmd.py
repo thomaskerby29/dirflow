@@ -6,13 +6,31 @@ from fileops.errorhandle import *
 import traceback
 
 
-def duplicate_cmd(parts):
+def exceptions_function(exceptions, file):
+    if not exceptions:
+        return True
+    elif file.is_dir() and file.name not in exceptions:
+        return True
+    elif (
+            file.is_file()
+            and file.stem not in exceptions
+            and f"*{file.suffix}" not in exceptions
+            and file.name not in exceptions
+            and not any(file.stem.startswith(p[:-1]) for p in exceptions if p.endswith("*"))
+            and not any(file.stem.endswith(p[1:]) for p in exceptions if p.startswith("*"))
+            and not any(p[1:-1] in file.stem for p in exceptions if p.startswith("*") and p.endswith("*"))
+    ):
+        return True
+    return False
+
+
+def duplicate_cmd(parts, exceptions):
     BUF_SIZE = 65536
     allFiles = {}
 
     def check_all(folder):
         for f in folder.iterdir():
-            if f.is_file():
+            if f.is_file() and exceptions_function(exceptions, f):
                 md5 = hashlib.md5()
                 try:
                     with open(str(f), 'rb') as file:
@@ -54,13 +72,13 @@ def duplicate_cmd(parts):
                     value_error("duplicate removal", type(removeChoice), "int")
 
 
-def older_cmd(parts):
+def older_cmd(parts, exceptions):
     allFiles = []
     oldFiles = []
 
     def check_all(folder):
         for f in folder.iterdir():
-            if f.is_file():
+            if f.is_file() and exceptions_function(exceptions, f):
                 allFiles.append(str(f))
             elif f.is_dir():
                 if '--all-subfolders' in parts:
@@ -99,12 +117,12 @@ def older_cmd(parts):
             print("Aborted")
 
 
-def empty_cmd(parts):
+def empty_cmd(parts, exceptions):
     emptyFolders = []
 
     def check_empty(folder):
         for f in folder.iterdir():
-            if f.is_dir():
+            if f.is_dir() and exceptions_function(exceptions, f):
                 if '--all-subfolders' in parts:
                     check_empty(f)
                 if not any(f.iterdir()):
@@ -156,10 +174,11 @@ def file_remove(oldFiles):
 def clean_cmd(cmd):
     parts = cmd.split(' ')
     mods = ['--all-subfolders', '--dry-run', '--skip-confirm', '--exclude']
-    args = {'--duplicates': lambda: duplicate_cmd(parts),
-            '--older-than': lambda: older_cmd(parts),
-            '--empty-folders': lambda: empty_cmd(parts)}
-    invalidMods = [p for p in parts[3:] if p.startswith('--') and p not in mods]
+    args = {'--duplicates': lambda: duplicate_cmd(parts, exceptions),
+            '--older-than': lambda: older_cmd(parts, exceptions),
+            '--empty-folders': lambda: empty_cmd(parts, exceptions)}
+    invalidMods = [p for p in parts[3:] if p.startswith('--') and p not in mods and p != '--exclude']
+
 
     if len(parts) < 2:
         missing_command("path")
@@ -172,4 +191,5 @@ def clean_cmd(cmd):
     elif invalidMods:
         invalid_argument(invalidMods[0])
     else:
+        exceptions = [parts[i + 1] for i, p in enumerate(parts[:-1]) if p == '--exclude']
         args[parts[2]]()

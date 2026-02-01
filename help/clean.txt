@@ -1,11 +1,25 @@
 clean <path> <action> [modifiers]
+
 • Actions:
-        • --duplicates
-        • --older-than <days_since_modification>
-        • --empty-folders
-    • Modifiers:
-        • --all-subfolders
-        • --dry-run
-        • --skip-confirm
-        • --exclude <pattern>
-            • Coming soon
+    • --duplicates
+    • --older-than <days_since_modification>
+    • --empty-folders
+• Modifiers:
+    • --all-subfolders
+    • --dry-run
+    • --skip-confirm
+    • --exclude <pattern>
+        • *.extension
+            • Files with extension
+        • filename
+            • Files named
+        • filename.extension
+            • Files named with extension
+        • foldername
+            • Folder named
+        • prefix*
+            • Name starts with
+        • *substring*
+            • Name contains
+        •*suffix
+            • Name ends with
